@@ -1,0 +1,86 @@
+{%  extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+	.profile-pic{
+		max-width: 200px;
+		max-height:200px;
+		margin: 0 auto;
+		border-radius: 50%;
+	}
+</style>
+
+<br>
+<div class="row">
+	<div class="col-md-3">
+		<div class="card card-body">
+      <a class="btn btn-warning" href="{% url 'home:tweetList' %}"> &#8592; Back to Home</a>
+			<hr>
+      <a class="btn btn-warning" href="{% url 'accounts:accountSettings' %}"> &#8592; Go to Account Settings</a>
+      <hr>
+			<h3 style="text-align: center">Profile</h3>
+			<hr>
+			<img class="profile-pic" src="{{request.user.profile.profile_pic.url}}" >
+			<h3>{{user_profile.user.username}}</h3>
+			{% if request.user.profile.slug ==  user_profile.slug %}
+				<p></p>
+			{% else %}
+				<a class="btn btn-primary" href="{% url 'accounts:follow' user_profile.slug %}" role="button">{% if follow %}Unfollow{% else %}Follow{% endif %}</a>
+			{% endif %}
+
+		</div>
+	</div>
+	<div class="col-md-9">
+		<div class="card card-body">
+
+
+			<h2>Following({{user_profile.get_following.count}})</h2>
+			{% for user in user_profile.get_following %}
+			 <a href="{% url 'accounts:userPage' user.profile.slug %}">{{user.username}}</a>
+			{% empty %}
+				<p>No following</p>
+			{% endfor %}
+
+			<h2>Followors({{user_profile.get_followors.count}})</h2>
+			{% for profile in user_profile.get_followors %}
+			 <a href="{% url 'accounts:userPage' profile.slug %}">{{profile.user.username}}</a>
+			{% empty %}
+				<p>No Followors</p>
+			{% endfor %}
+
+
+			{% for tweet in tweets %}
+			<div class='row'>
+			  <div class='col'>
+			    <div class="media">
+			    <img class="align-self-start mr-3" src="{% static 'images/deafult.png' %}">
+			    <div class="media-body">
+			      <h5 class="mt-0">{{tweet.tweetUser}}</h5>
+			      <p>{{tweet.content}}</p>
+			      {{tweet.timestamp}}
+			      {{tweet.timestamp|timesince}} ago <br><br>
+			      <div class="row">
+			        <a class="btn btn-primary" href="{% url 'home:tweetDetail' tweet.id %}" role="button">Detail</a> &nbsp; &nbsp;
+			        <a class="btn btn-success" href="{% url 'home:tweetUpdate' tweet.id %}" role="Update">Update</a> &nbsp; &nbsp;
+			        <a class="btn btn-danger" href="{% url 'home:tweetDelete' tweet.id %}" role="Delete">Delete</a> &nbsp; &nbsp;
+							<a class="btn btn-danger" href="{% url 'home:retweet' tweet.id %}" role="Retweet">Retweet</a> &nbsp; &nbsp;
+			      </div>
+			    </div>
+
+			    </div>
+			    <br><br>
+			  <hr>
+			</div>
+			</div>
+			{% empty %}
+			  <p>Opps! No such keyWord found</p>
+			{% endfor %}
+
+		</div>
+	</div>
+</div>
+
+
+
+{% endblock %}

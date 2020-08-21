@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+{% include "form.html" with form=form btn_title='Tweet' %}
+
+<div class="media">
+<img class="align-self-start mr-3" src="">
+<div class="media-body">
+  <h5 class="mt-0">{{tweet.user}}</h5>
+  <p>{{tweet.content}}</p>
+  {{tweet.timestamp}}
+  {{tweet.timestamp|timesince}} ago
+</div>
+</div>
+
+{% endblock content %}

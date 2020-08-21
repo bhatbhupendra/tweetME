@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{form}}
+  <input class="btn btn-primary" type="submit" name="Tweet" value="Tweet">
+</form>
+{% for tweet in tweets %}
+<div class='row'>
+  <div class='col'>
+    <div class="media">
+    <img class="align-self-start mr-3" src="{% static 'images/deafult.png' %}">
+    <div class="media-body">
+      <h5 class="mt-0"><a href="{% url 'accounts:userPage' tweet.tweetUser.slug %}">{{tweet.tweetUser}}</a></h5>
+      {% if tweet.parent %}
+        <hr>
+        <p>Retweeted from <a href="{% url 'accounts:userPage' tweet.parent.tweetUser.slug %}">{{tweet.parent.tweetUser}}</a></p>
+        <hr>
+      {% endif %}
+      <p>{{tweet.content}}</p>
+      {{tweet.timestamp}}
+      {{tweet.timestamp|timesince}} ago <br><br>
+      <div class="row">
+        <a class="btn btn-success" href="{% url 'home:liked' tweet.id %}" role="button">{% if request.user in tweet.liked.all %}Unlike{% else %}Like{% endif %}({{tweet.liked.count}})</a> &nbsp; &nbsp;
+        <a class="btn btn-primary" href="{% url 'home:tweetDetail' tweet.id %}" role="button">Detail</a> &nbsp; &nbsp;
+        <a class="btn btn-success" href="{% url 'home:tweetUpdate' tweet.id %}" role="Update">Update</a> &nbsp; &nbsp;
+        <a class="btn btn-danger" href="{% url 'home:tweetDelete' tweet.id %}" role="Delete">Delete</a> &nbsp; &nbsp;
+        <a class="btn btn-danger" href="{% url 'home:retweet' tweet.id %}" role="Retweet">Retweet</a> &nbsp; &nbsp;
+      </div>
+    </div>
+
+    </div>
+    <br><br>
+  <hr>
+</div>
+</div>
+{% empty %}
+  <p>Opps! No such keyWord found</p>
+{% endfor %}
+
+
+
+{% if tweets.has_other_pages %}
+<nav aria-label="...">
+  <ul class="pagination">
+
+    {% if tweets.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{tweets.previous_page_number}}" tabindex="-1">Previous</a>
+      </li>
+    {% else %}
+      <li class="disabled"></li>
+    {% endif %}
+
+    {% for pages in tweets.paginator.page_range %}
+      {% if tweets.number == pages %}
+        <li class="page-item active"><a class="page-link" href="#">{{pages}}</a></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{pages}}">{{pages}}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if tweets.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{tweets.next_page_number}}">Next</a>
+      </li>
+    {% else %}
+        <li class="disabled"></li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock content %}
